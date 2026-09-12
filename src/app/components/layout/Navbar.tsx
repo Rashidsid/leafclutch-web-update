@@ -112,7 +112,7 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 bg-white border-b transition-all duration-300 md:left-18 ${
-        scrolled ? '-translate-y-full border-transparent' : 'shadow-md border-[#EBF0FA]'
+        scrolled && !menuOpen ? '-translate-y-full border-transparent' : 'shadow-md border-[#EBF0FA]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -271,10 +271,10 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden bg-white border-t border-border shadow-xl">
+        <div className="lg:hidden relative z-10 max-h-[calc(100vh-3.5rem)] overflow-y-auto bg-white border-t border-border shadow-xl pointer-events-auto">
           <div className="px-4 py-4 space-y-1">
-            <Link href="/" className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">Home</Link>
-            <Link href="/about" className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">About Us</Link>
+            <Link href="/" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">Home</Link>
+            <Link href="/about" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">About Us</Link>
             <div className="mobile-nav-group">
               <button type="button" aria-expanded={servicesOpen} onClick={() => setServicesOpen(open => !open)} className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                 Services
@@ -282,7 +282,7 @@ export default function Navbar() {
               </button>
               {servicesOpen && <div className="mt-1 space-y-1">
                 {services.map((s) => (
-                  <Link key={s.slug} href={`/services/${s.slug}`} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">
+                  <Link key={s.slug} href={`/services/${s.slug}`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-accent">{s.icon}</svg>
                     <span>{s.name}</span>
                   </Link>
@@ -294,16 +294,16 @@ export default function Navbar() {
                 Careers
                 <svg className={`h-4 w-4 transition-transform ${careersOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" /></svg>
               </button>
-              {careersOpen && <div className="mt-1 space-y-1">{careerLinks.map((item) => <Link key={item.name} href={item.href} className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">{item.name}</Link>)}</div>}
+              {careersOpen && <div className="mt-1 space-y-1">{careerLinks.map((item) => <Link key={item.name} href={item.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">{item.name}</Link>)}</div>}
             </div>
             <div className="mobile-nav-group">
               <button type="button" aria-expanded={othersOpen} onClick={() => setOthersOpen(open => !open)} className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                 Others
                 <svg className={`h-4 w-4 transition-transform ${othersOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" /></svg>
               </button>
-              {othersOpen && <div className="mt-1 space-y-1">{otherLinks.map((item) => <Link key={item.name} href={item.href} className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">{item.name}</Link>)}</div>}
+              {othersOpen && <div className="mt-1 space-y-1">{otherLinks.map((item) => <Link key={item.name} href={item.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary">{item.name}</Link>)}</div>}
             </div>
-            <a href="mailto:info@leafclutchtech.com.np" className="block mx-3 mt-3 btn-primary text-white text-center text-sm font-semibold px-5 py-3 rounded-xl">
+            <a href="mailto:info@leafclutchtech.com.np" onClick={() => setMenuOpen(false)} className="block mx-3 mt-3 btn-primary text-white text-center text-sm font-semibold px-5 py-3 rounded-xl">
               Contact Us
             </a>
           </div>
