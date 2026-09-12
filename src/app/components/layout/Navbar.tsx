@@ -64,6 +64,7 @@ export default function Navbar() {
   const dropRef = useRef<HTMLDivElement>(null);
   const careersRef = useRef<HTMLDivElement>(null);
   const othersRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { services: managedServices } = useAdmin();
   const services = managedServices.map((service, index) => {
@@ -94,6 +95,7 @@ export default function Navbar() {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as Node;
       if (
+        !mobileMenuRef.current?.contains(target) &&
         !dropRef.current?.contains(target) &&
         !careersRef.current?.contains(target) &&
         !othersRef.current?.contains(target)
@@ -271,7 +273,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden relative z-10 max-h-[calc(100vh-3.5rem)] overflow-y-auto bg-white border-t border-border shadow-xl pointer-events-auto">
+        <div ref={mobileMenuRef} className="lg:hidden relative z-10 max-h-[calc(100vh-3.5rem)] overflow-y-auto bg-white border-t border-border shadow-xl pointer-events-auto">
           <div className="px-4 py-4 space-y-1">
             <Link href="/" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">Home</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-secondary">About Us</Link>
