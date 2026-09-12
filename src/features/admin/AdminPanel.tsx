@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import logoImg from '@/imports/leafclutch-technologies-pvt-ltd.image.logo-new.Woblo.png';
+const logoImg = '/logo.png';
 import { useAdmin, type NewAdminService } from '@/app/context/AdminContext';
 import { supabase } from '@/lib/supabase';
 import { Field, ICON_CHOICES, ImageDropzone, Modal } from './shared';

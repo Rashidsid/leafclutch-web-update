@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import logoImg from '@/imports/leafclutch-technologies-pvt-ltd.image.logo-new.Woblo.png';
+const logoImg = '/logo.png';
 
 const companyLinks = [
   { label: 'Home', to: '/' },
@@ -88,7 +88,7 @@ export default function Footer() {
           {/* Brand column */}
           <div>
             <div className="inline-block bg-white rounded-xl px-4 py-2 mb-4 shadow-lg">
-              <img src={logoImg.src} alt="Leafclutch Technologies Pvt. Ltd." className="h-11 w-auto" />
+              <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="h-11 w-auto" />
             </div>
             <p className="text-[#AEC0DE] text-sm leading-relaxed mb-3 max-w-xs">
               Empowering innovation through cutting-edge technology solutions, training, and digital transformation services.

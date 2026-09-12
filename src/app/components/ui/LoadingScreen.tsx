@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import logoImg from '@/imports/leafclutch-technologies-pvt-ltd.image.logo-new.Woblo.png';
+const logoImg = '/logo.png';
 
 interface Props {
   onComplete: () => void;
@@ -87,7 +87,7 @@ export default function LoadingScreen({ onComplete }: Props) {
             <span className="brand-loader-dot brand-loader-dot-blue" />
           </div>
           <div className="brand-loader-ring">
-            <img src={logoImg.src} alt="Leafclutch Technologies Pvt. Ltd." className="brand-loader-logo" />
+            <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="brand-loader-logo" />
           </div>
         </div>
 

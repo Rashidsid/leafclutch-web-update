@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRevealAll } from '@/app/hooks/useReveal';
 import TestimonialSection from '@/app/components/ui/TestimonialSection';
 import { useAdmin } from '@/app/context/AdminContext';
-import logoImg from '@/imports/leafclutch-technologies-pvt-ltd.image.logo-new.Woblo.png';
+const logoImg = '/logo.png';
 
 const services = [
   {
@@ -247,7 +247,7 @@ export default function Home() {
                   <span className="brand-loader-dot brand-loader-dot-blue" />
                 </div>
                 <div className="brand-loader-ring">
-                  <img src={logoImg.src} alt="Leafclutch Technologies Pvt. Ltd." className="brand-loader-logo" />
+                  <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="brand-loader-logo" />
                 </div>
               </div>
             </div>
@@ -380,7 +380,7 @@ export default function Home() {
           <section className="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contact-popup-title" onMouseDown={event => event.stopPropagation()}>
             <button type="button" className="contact-popup-close" aria-label="Close contact popup" onClick={() => setIsContactPopupOpen(false)}>×</button>
             <div className="contact-popup-copy">
-              <img src={logoImg.src} alt="Leafclutch Technology" className="contact-popup-logo" />
+              <img src={logoImg} alt="Leafclutch Technology" className="contact-popup-logo" />
               <span className="contact-popup-kicker">Have a question?</span>
               <h2 id="contact-popup-title">Let’s Build<br /><em>Your Ideas</em> Together</h2>
               <p>Have questions about our services? Talk to our team and get the right solution for your needs.</p>
