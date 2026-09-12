@@ -78,6 +78,9 @@
 *.ttf                filter=lfs diff=lfs merge=lfs -text
 *.otf                filter=lfs diff=lfs merge=lfs -text
 *.woff               filter=lfs diff=lfs merge=lfs -text
+
+# Keep the site logo in the normal Git checkout so Vercel can build it without Git LFS.
+src/imports/leafclutch-technologies-pvt-ltd.image.logo-new.Woblo.png -filter -diff merge text
 *.woff2              filter=lfs diff=lfs merge=lfs -text
 *.eot                filter=lfs diff=lfs merge=lfs -text
 
