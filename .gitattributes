@@ -79,8 +79,8 @@
 *.otf                filter=lfs diff=lfs merge=lfs -text
 *.woff               filter=lfs diff=lfs merge=lfs -text
 
-# Keep the site logo in the normal Git checkout so Vercel can serve it without Git LFS.
-public/logo.png -filter -diff -merge -text
+# Keep public site assets in the normal Git checkout so Vercel can serve them without Git LFS.
+public/*.png -filter -diff -merge -text
 *.woff2              filter=lfs diff=lfs merge=lfs -text
 *.eot                filter=lfs diff=lfs merge=lfs -text
 
