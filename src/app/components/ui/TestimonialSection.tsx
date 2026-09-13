@@ -127,9 +127,9 @@ export default function TestimonialSection({ service }: Props) {
   const activeItem = filtered[Math.min(active, filtered.length - 1)];
 
   return (
-    <section className="py-24 bg-[#F8FAFC] relative overflow-hidden">
+    <section className="py-8 lg:py-10 bg-[#F8FAFC] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div ref={headerRef} className="reveal text-center mb-14">
+        <div ref={headerRef} className="reveal text-center mb-8">
           <span className="line-accent mx-auto" style={{ margin: '0 auto 16px' }} />
           <span className="section-badge mb-4">Client Stories</span>
           <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F1729] mt-4">

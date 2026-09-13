@@ -77,19 +77,45 @@ const services = [
   },
 ];
 
+/* Positions are projected from each city's real latitude/longitude onto the
+   Nepal outline's own bounding box, so the pins line up with the actual map. */
+const provinceHubs = [
+  { key: 'sudurpashchim', province: 'Sudurpashchim', city: 'Dhangadhi', left: '11%', top: '35%' },
+  { key: 'karnali', province: 'Karnali', city: 'Surkhet', left: '21%', top: '52%' },
+  { key: 'gandaki', province: 'Gandaki', city: 'Pokhara', left: '48%', top: '55%' },
+  { key: 'lumbini', province: 'Lumbini', city: 'Siddharthanagar', left: '38%', top: '72%', isHq: true },
+  { key: 'bagmati', province: 'Bagmati', city: 'Kathmandu', left: '65%', top: '67%' },
+  { key: 'madhesh', province: 'Madhesh', city: 'Janakpur', left: '72%', top: '82%' },
+  { key: 'koshi', province: 'Koshi', city: 'Biratnagar', left: '87%', top: '85%' },
+];
+
+const trustedLogos = [
+  { key: 'himalayan-bistro', name: 'Himalayan Bistro', icon: <><path d="M6 2v7a2 2 0 002 2h0a2 2 0 002-2V2M8 11v11" /><path d="M16 2c-1.5 2-1.5 6 0 8s1.5 0 1.5 0V2z" /></> },
+  { key: 'bright-future', name: 'Bright Future Academy', icon: <><path d="M12 3L2 8l10 5 10-5-10-5z" /><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5" /></> },
+  { key: 'kantipur-digital', name: 'Kantipur Digital', icon: <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M2 20h20" /></> },
+  { key: 'medicare-pharmacy', name: 'MediCare Pharmacy', icon: <><rect x="4.5" y="4.5" width="15" height="15" rx="7.5" transform="rotate(45 12 12)" /><path d="M8.5 15.5l7-7" /></> },
+  { key: 'sagarmatha-school', name: 'Sagarmatha School', icon: <><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" /><path d="M9 12l2 2 4-4" /></> },
+  { key: 'everest-it', name: 'Everest IT Academy', icon: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9h10M7 13h7" /></> },
+  { key: 'annapurna-foods', name: 'Annapurna Foods', icon: <><path d="M8 21h8M9 21v-5M15 21v-5M6 10a4 4 0 018-1.8A4 4 0 0118 10c0 2-1.5 3.5-3 4.2V16H9v-1.8C7.5 13.5 6 12 6 10z" /></> },
+  { key: 'pokhara-health', name: 'Pokhara Health Clinic', icon: <><path d="M12 21c4-3 7-6.5 7-11a7 7 0 10-14 0c0 4.5 3 8 7 11z" /><circle cx="12" cy="10" r="2.6" /></> },
+];
+
 
 export default function Home() {
-  const [greeting, setGreeting] = useState('नमस्ते!');
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(true);
   const whyIntroRef = useRef<HTMLDivElement>(null);
   const aboutPanelRef = useRef<HTMLDivElement>(null);
-  const servicesRowRef = useRef<HTMLDivElement>(null);
+  const servicesScrollBoxRef = useRef<HTMLDivElement>(null);
+  const servicePageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [activeService, setActiveService] = useState(0);
   const { services: managedServices } = useAdmin();
   const serviceCards = managedServices.map((service, index) => {
     const fallback = services.find(item => item.slug === service.id);
     return {
       name: service.title,
       slug: service.id,
+      label: service.label || fallback?.name || 'Our Services',
+      heading: service.heading || service.title,
       desc: service.description || fallback?.desc || 'Explore this solution from Leafclutch Technologies.',
       color: fallback?.color ?? ['#0EA5E9', '#25D366', '#3B82F6'][index % 3],
       image: service.heroImage || fallback?.image || '',
@@ -101,50 +127,10 @@ export default function Home() {
   const scrollToServices = () => {
     document.getElementById('services')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-
-  useEffect(() => {
-    const row = servicesRowRef.current;
-    if (!row) return;
-    let dragging = false;
-    let dragged = false;
-    let startX = 0;
-    let startScroll = 0;
-    const onPointerDown = (e: PointerEvent) => {
-      dragging = true;
-      dragged = false;
-      startX = e.clientX;
-      startScroll = row.scrollLeft;
-      row.setPointerCapture(e.pointerId);
-      row.classList.add('is-dragging');
-    };
-    const onPointerMove = (e: PointerEvent) => {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 5) dragged = true;
-      row.scrollLeft = startScroll - dx;
-    };
-    const endDrag = () => { dragging = false; row.classList.remove('is-dragging'); };
-    const onClickCapture = (e: MouseEvent) => {
-      if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; }
-    };
-    row.addEventListener('pointerdown', onPointerDown);
-    row.addEventListener('pointermove', onPointerMove);
-    row.addEventListener('pointerup', endDrag);
-    row.addEventListener('pointercancel', endDrag);
-    row.addEventListener('click', onClickCapture, true);
-    return () => {
-      row.removeEventListener('pointerdown', onPointerDown);
-      row.removeEventListener('pointermove', onPointerMove);
-      row.removeEventListener('pointerup', endDrag);
-      row.removeEventListener('pointercancel', endDrag);
-      row.removeEventListener('click', onClickCapture, true);
-    };
-  }, []);
-
-  const scrollServices = (direction: 1 | -1) => {
-    const row = servicesRowRef.current;
-    if (!row) return;
-    row.scrollBy({ left: direction * row.clientWidth * 0.85, behavior: 'smooth' });
+  const goToService = (index: number) => {
+    const box = servicesScrollBoxRef.current;
+    if (!box) return;
+    box.scrollTo({ top: index * box.clientHeight, behavior: 'smooth' });
   };
 
   useRevealAll();
@@ -162,12 +148,6 @@ export default function Home() {
     };
   }, [isContactPopupOpen]);
   useEffect(() => {
-    const greetingTimer = setInterval(() => {
-      setGreeting(current => current === 'नमस्ते!' ? 'स्वागत छ' : 'नमस्ते!');
-    }, 1800);
-    return () => clearInterval(greetingTimer);
-  }, []);
-  useEffect(() => {
     const section = whyIntroRef.current;
     const panel = aboutPanelRef.current;
     if (!section || !panel) return;
@@ -183,140 +163,311 @@ export default function Home() {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const box = servicesScrollBoxRef.current;
+    const pages = servicePageRefs.current.filter((page): page is HTMLDivElement => page !== null);
+    if (!box || !pages.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            const index = pages.indexOf(entry.target as HTMLDivElement);
+            if (index !== -1) setActiveService(index);
+          }
+        });
+      },
+      { root: box, threshold: [0.5] }
+    );
+    pages.forEach((page) => observer.observe(page));
+    return () => observer.disconnect();
+  }, [serviceCards.length]);
   return (
     <div className="bg-white">
-      {/* ── HERO ── white bg, navy text, accent only on highlights */}
-      <section className="landing-hero relative min-h-screen overflow-hidden flex items-center">
-        <div className="landing-hero-grid absolute inset-0" />
-        <div className="landing-hero-wash landing-hero-wash-blue absolute" />
-        <div className="landing-hero-wash landing-hero-wash-green absolute" />
-        <div className="landing-hero-rings absolute" />
-        <div className="landing-hero-dots absolute" />
-        <div className="landing-hero-art absolute" aria-hidden="true">
-          <span className="landing-hero-bubble landing-hero-bubble-blue" />
-          <span className="landing-hero-bubble landing-hero-bubble-teal" />
-          <span className="landing-hero-bubble landing-hero-bubble-green" />
-          <span className="landing-hero-wave landing-hero-wave-one" />
-          <span className="landing-hero-wave landing-hero-wave-two" />
-          <span className="landing-hero-wave landing-hero-wave-three" />
+      {/* ── HERO ── orbiting services scene */}
+      <section className="hero2 relative overflow-hidden">
+        <div className="hero2-backdrop absolute inset-0" aria-hidden="true">
+          <div className="absolute inset-0 hero-grid opacity-[0.35]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 relative z-10 w-full">
-          <div className="landing-hero-content grid lg:grid-cols-2 gap-16 items-center">
+        <span className="hero2-note note-a" aria-hidden="true">From Ideas to<br />Impact</span>
+        <span className="hero2-note note-b" aria-hidden="true">Smart Solutions<br />Real Impact</span>
+        <span className="hero2-note note-c" aria-hidden="true">Technology<br />for People</span>
 
-            {/* Left: copy */}
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-[#072069] border border-[#072069]/25 bg-[#072069]/5 px-4 py-2 rounded-full mb-8 animate-fade-up">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#16D0AB] animate-pulse" />
-                <span key={greeting} className="greeting-text">{greeting}</span>
-              </div>
-
-              <h1 className="text-[3.4rem] lg:text-[4.8rem] font-extrabold leading-[1.06] text-[#0F1729] animate-fade-up delay-100">
-                We build<br />
-                intelligent<br />
-                <span className="text-[#072069]">Software & AI.</span>
-              </h1>
-
-              <p className="text-[#676F7E] text-lg mt-7 max-w-md leading-relaxed animate-fade-up delay-200">
-                Leafclutch Technologies delivers <strong className="text-[#0F1729] font-semibold">mission-critical engineering</strong> and responsible AI automation tailored for enterprise scale.
-              </p>
-
-              <div className="flex flex-wrap gap-3 mt-10 animate-fade-up delay-300">
-                <button type="button" onClick={scrollToServices} className="btn-navy font-semibold px-7 py-3.5 rounded-xl text-sm">
-                  Explore Services →
-                </button>
-                <a href="mailto:info@leafclutchtech.com.np" className="btn-outline font-semibold px-7 py-3.5 rounded-xl text-sm">
-                  Get In Touch
-                </a>
-              </div>
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-4 lg:pt-20 relative z-10 w-full">
+          <div className="hero2-copy">
+            <div className="hero2-kicker animate-fade-up">
+              <span>Ideas</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              <span>Solutions</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              <span>Impact</span>
             </div>
 
-            {/* Right: animated company logo */}
-            <div className="landing-hero-logo-wrap flex items-center justify-center animate-fade-right delay-200">
-              <div className="brand-loader-scene hero-logo-scene">
-                <div className="brand-loader-glow" />
-                <div className="brand-loader-orbit brand-loader-orbit-one">
-                  <span className="brand-loader-dot brand-loader-dot-blue" />
-                  <span className="brand-loader-dot brand-loader-dot-green" />
-                  <span className="brand-loader-dot brand-loader-dot-cyan" />
-                  <span className="brand-loader-dot brand-loader-dot-mint" />
-                </div>
-                <div className="brand-loader-orbit brand-loader-orbit-two">
-                  <span className="brand-loader-dot brand-loader-dot-green" />
-                  <span className="brand-loader-dot brand-loader-dot-blue" />
-                </div>
-                <div className="brand-loader-ring">
-                  <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="brand-loader-logo" />
-                </div>
+            <h1 className="hero2-title animate-fade-up delay-100">
+              Technology that<br />
+              <span className="hero2-title-grad">Builds a Better Tomorrow</span>
+            </h1>
+
+            <p className="hero2-sub animate-fade-up delay-200">
+              We design and deliver custom software, automation and digital solutions that help businesses operate smarter, grow faster and create real impact.
+            </p>
+
+          </div>
+
+          <div className="hero2-orbit-scene animate-fade-up delay-300">
+            <span className="hero2-halo" />
+            <span className="hero2-ring ring-outer" />
+            <span className="hero2-ring ring-inner" />
+            <span className="hero2-ring-spin" />
+            <span className="hero2-particle p1" />
+            <span className="hero2-particle p2" />
+            <span className="hero2-particle p3" />
+            <span className="hero2-particle p4" />
+            <div className="hero2-platform" />
+
+            <div className="hero2-globe-wrap">
+              <div className="hero2-globe">
+                <img src="/logoF.png" alt="Leafclutch Technologies" className="hero2-globe-logo" />
+              </div>
+
+              <span className="hero2-peek-badge badge-tl" style={{ background: 'linear-gradient(145deg, #4FC3FF, #0B76C4)' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M21 11.5a8.38 8.38 0 01-4.8 7.6 8.5 8.5 0 01-9.4-1.8L3 21l1.9-4.8a8.5 8.5 0 011.8-9.4A8.38 8.38 0 0114.3 3a8.5 8.5 0 016.7 8.5z" />
+                </svg>
+              </span>
+              <span className="hero2-peek-badge badge-tr" style={{ background: 'linear-gradient(145deg, #6BE3B4, #14A874)' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v4M12 16h.01" />
+                </svg>
+              </span>
+              <span className="hero2-peek-badge badge-bl" style={{ background: 'linear-gradient(145deg, #7DA8FF, #2F5FDB)' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+              </span>
+              <span className="hero2-peek-badge badge-br" style={{ background: 'linear-gradient(145deg, #4FD9C8, #0B8E93)' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.1-3.1a6 6 0 01-8 8l-6.5 6.5a2.1 2.1 0 01-3-3l6.5-6.5a6 6 0 018-8l-3.1 3.1z" />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <button type="button" onClick={scrollToServices} className="hero2-scroll-cue" aria-label="Scroll down to explore services">
+            <span>Scroll</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M12 5v14M6 13l6 6 6-6" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="hero2-stats-wrap relative z-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="hero2-stats-bar">
+              <div className="hero2-stat">
+                <span className="hero2-stat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
+                </span>
+                <div><strong>500+</strong><span>Happy Clients</span></div>
+              </div>
+              <div className="hero2-stat">
+                <span className="hero2-stat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
+                </span>
+                <div><strong>50+</strong><span>Projects Delivered</span></div>
+              </div>
+
+              <div className="hero2-stat">
+                <span className="hero2-stat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>
+                </span>
+                <div><strong>5+</strong><span>Years Experience</span></div>
+              </div>
+              <div className="hero2-stat">
+                <span className="hero2-stat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" /><path d="M9 12l2 2 4-4" /></svg>
+                </span>
+                <div><strong>99.9%</strong><span>Service Uptime</span></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── SERVICES ── clean white, card grid */}
-      <section id="services" className="pt-8 pb-24 bg-white">
+      {/* ── SERVICES ── one fixed screen, scrolls up/down internally through each service */}
+      <section id="services" className="pt-8 pb-6 lg:pb-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-14">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
             <div className="reveal-left">
-              <span className="section-badge mb-4">Our Services</span>
-              <h2 className="text-4xl lg:text-5xl font-extrabold text-[#0F1729] mt-4 leading-tight">
+              <span className="section-badge mb-2">Our Services</span>
+              <h2 className="text-4xl lg:text-5xl font-extrabold text-[#0F1729] mt-2 leading-tight">
                 Solutions built for<br />
                 <span className="text-[#072069]">real impact</span>
               </h2>
             </div>
           </div>
 
-          <div className="service-capsule-row-wrap">
-            <button type="button" onClick={() => scrollServices(-1)} aria-label="Scroll services left" className="service-capsule-nav prev">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div className="service-capsule-row" ref={servicesRowRef}>
+          <div className="services-tab-row reveal-left">
             {serviceCards.map((s, i) => (
-              <div
-                key={`${s.slug}-${i}`}
-                className="service-capsule-float reveal"
-                style={{ transitionDelay: `${i * 0.07}s`, animationDelay: `${i * 0.35}s` }}
+              <button
+                key={s.slug}
+                type="button"
+                onClick={() => goToService(i)}
+                className={`services-tab-pill${i === activeService ? ' is-active' : ''}`}
               >
-                <Link href={`/services/${s.slug}`} className="service-capsule group block bg-white" draggable={false}>
-                  {s.comingSoon && (
-                    <span className="absolute top-3 right-3 z-10 text-[10px] font-bold bg-[#3BE3A0]/90 text-white px-2.5 py-1 rounded-full shrink-0">Soon</span>
-                  )}
-                  <div className="service-capsule-media">
-                    {s.image ? <img src={s.image} alt={s.name} draggable={false} /> : <span className="flex h-full items-center justify-center text-4xl">{s.name.slice(0, 1)}</span>}
+                {s.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="services-scrollbox-wrap">
+            <div className="services-scrollbox" ref={servicesScrollBoxRef}>
+              {serviceCards.map((s, i) => (
+                <div
+                  key={s.slug}
+                  ref={(el) => { servicePageRefs.current[i] = el; }}
+                  className="services-scrollbox-page"
+                >
+                  <div className="services-stage-grid">
+                    <div className="services-story-copy">
+                      <div className="services-story-badge-wrap">
+                        <span className="services-story-icon" style={{ background: s.color }}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            {s.icon}
+                          </svg>
+                        </span>
+                        <span className="services-story-pill">{s.label}</span>
+                      </div>
+                      {s.comingSoon && <span className="services-story-soon">Coming Soon</span>}
+                      <h3 className="services-story-heading">{s.heading}</h3>
+                      <p className="services-story-desc">{s.desc}</p>
+                      <Link href={`/services/${s.slug}`} className="btn-navy font-semibold px-7 py-3.5 rounded-xl text-sm inline-flex items-center gap-2 w-fit">
+                        Explore {s.name} <span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+
+                    <div className="services-story-visual">
+                      <div className="services-story-browser">
+                        <div className="services-story-browser-bar">
+                          <span className="services-story-dot dot-red" />
+                          <span className="services-story-dot dot-yellow" />
+                          <span className="services-story-dot dot-green" />
+                          <span className="services-story-url">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 shrink-0">
+                              <rect x="5" y="11" width="14" height="9" rx="2" />
+                              <path d="M8 11V7a4 4 0 018 0v4" />
+                            </svg>
+                            leafclutchtech.com/{s.slug}
+                          </span>
+                        </div>
+                        <div className="services-story-browser-body">
+                          {s.image ? <img src={s.image} alt="" /> : <span className="flex h-full items-center justify-center text-6xl text-[#0F1729]/20">{s.name.slice(0, 1)}</span>}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="service-capsule-badge" style={{ background: s.color }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      {s.icon}
-                    </svg>
+                </div>
+              ))}
+            </div>
+
+            <div className="services-scrollbox-dots">
+              {serviceCards.map((s, i) => (
+                <button key={s.slug} type="button" aria-label={`Show ${s.name}`} className={i === activeService ? 'is-active' : ''} onClick={() => goToService(i)} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── NEPAL REACH ── */}
+      <section className="py-2 lg:py-4 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="nepal-banner reveal">
+            <div className="nepal-map">
+              <img src="/map.png" alt="Map of Nepal's seven provinces" className="nepal-map-img" />
+
+              {provinceHubs.map((hub, i) => (
+                <span
+                  key={hub.key}
+                  className={`nepal-pin${hub.isHq ? ' is-hq' : ''}`}
+                  style={{ left: hub.left, top: hub.top, animationDelay: `${i * 0.35}s` }}
+                >
+                  <span className="nepal-pin-text">
+                    <strong>{hub.province}</strong>
+                    <span>{hub.city}{hub.isHq ? ' · HQ' : ''}</span>
                   </span>
-                  <div className="service-capsule-body">
-                    <h3 className="font-bold text-[#0F1729] text-[1.02rem] leading-snug group-hover:text-[#0EA5E9] transition-colors">{s.name}</h3>
-                    <p className="text-[#676F7E] text-xs mt-2 leading-relaxed">{s.desc}</p>
-                    <span className="service-capsule-arrow" style={{ background: s.color + '18', color: s.color }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
+                  <i className="nepal-pin-dot" />
+                </span>
+              ))}
+
+              <span className="nepal-hq-badge" style={{ left: '38%', top: '86%' }} aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                  <path d="M12 21c4-3 7-6.5 7-11a7 7 0 10-14 0c0 4.5 3 8 7 11z" />
+                  <circle cx="12" cy="10" r="2.6" />
+                </svg>
+              </span>
+            </div>
+
+            <div className="nepal-copy">
+              <span className="nepal-kicker">Trusted Across Nepal</span>
+              <h2 className="nepal-heading">
+                Powering Businesses<br />
+                Across Nepal <em>Since 2020</em>
+              </h2>
+              <p className="nepal-desc">
+                We build restaurant, pharmacy and school management systems, custom software and AI-driven automation for businesses across the country. From our home base in Siddharthanagar to every corner of Nepal, we&apos;re here to help you run smarter and grow faster.
+              </p>
+
+              <div className="nepal-stats">
+                <div>
+                  <strong>7</strong>
+                  <span>Provinces Served</span>
+                </div>
+                <div>
+                  <strong>150+</strong>
+                  <span>Projects Delivered</span>
+                </div>
+                <div>
+                  <strong>50+</strong>
+                  <span>Happy Clients</span>
+                </div>
+              </div>
+
+              <div className="nepal-quote">
+                <span className="nepal-quote-mark" aria-hidden="true">“</span>
+                तपाईंको डिजिटल सफलता, हाम्रो जिम्मेवारी
+                <span className="nepal-quote-mark" aria-hidden="true">”</span>
+                <span className="nepal-quote-sub">— सधैं तपाईंसँग, सधैं नेपालको लागि</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRUSTED BY ── auto-scrolling logo marquee */}
+      <section className="py-10 lg:py-12 bg-white border-t border-[#EBF0FA]">
+        <p className="text-center text-xs font-bold tracking-[0.2em] uppercase text-[#7A8AA8] mb-8">
+          Proud to partner with
+        </p>
+        <div className="logo-marquee-wrap">
+          <div className="logo-marquee-track">
+            {[...trustedLogos, ...trustedLogos].map((logo, i) => (
+              <div key={`${logo.key}-${i}`} className="logo-marquee-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0">
+                  {logo.icon}
+                </svg>
+                <span>{logo.name}</span>
               </div>
             ))}
-            </div>
-            <button type="button" onClick={() => scrollServices(1)} aria-label="Scroll services right" className="service-capsule-nav next">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
           </div>
         </div>
       </section>
 
       {/* ── WHY US ── */}
-      <section className="why-us-section relative overflow-hidden bg-[#F8FAFC] py-24">
+      <section id="our-story" className="why-us-section relative overflow-hidden bg-[#F8FAFC] py-8 lg:py-10">
         <div className="absolute inset-0 hero-grid opacity-[0.22]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div ref={whyIntroRef} className="why-us-intro mb-20 grid items-center gap-14 lg:grid-cols-[90px_minmax(0,1fr)]">
@@ -325,16 +476,11 @@ export default function Home() {
               <span className="h-20 w-px bg-[#D9E0EA]" />
             </div>
             <div className="grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
-              <div className="why-laptop-scene reveal-left">
-                <div className="why-laptop-glow" />
-                <div className="why-laptop">
-                  <div className="why-laptop-screen">
-                    <div className="flex items-center justify-between border-b border-[#D9E0EA] pb-3"><div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#0EA5E9]" /><span className="text-xs font-bold text-[#0F1729]">Leafclutch OS</span></div><span className="text-[10px] text-[#676F7E]">Live workspace</span></div>
-                    <div className="mt-4 grid grid-cols-3 gap-2">{['150+', '50+', '6+'].map((value, index) => <div key={value} className="rounded-lg bg-[#F8FAFC] p-2"><p className="text-sm font-bold text-[#072069]">{value}</p><p className="text-[8px] text-[#676F7E]">{['Projects', 'Clients', 'Years'][index]}</p></div>)}</div>
-                    <div className="mt-4 rounded-lg bg-[#F8FAFC] p-3"><div className="mb-3 flex items-center justify-between"><span className="text-[10px] font-bold text-[#0F1729]">Delivery health</span><span className="text-[9px] font-semibold text-[#25D366]">98.4%</span></div><div className="flex h-16 items-end gap-1">{[35, 52, 44, 70, 58, 82, 76, 95, 88, 100].map((height, index) => <span key={index} className={`flex-1 rounded-t-sm ${index === 9 ? 'bg-[#0EA5E9]' : 'bg-[#D9EAF5]'}`} style={{ height: `${height}%` }} />)}</div></div>
-                    <div className="mt-3 space-y-2">{['Restaurant platform', 'School ERP', 'AI automation'].map((label) => <div key={label} className="flex items-center gap-2 text-[9px] text-[#676F7E]"><span className="h-1.5 w-1.5 rounded-full bg-[#3BE3A0]" />{label}<span className="ml-auto font-semibold text-[#0EA5E9]">Active</span></div>)}</div>
-                  </div>
-                  <div className="why-laptop-base" />
+              <div className="why-badge-scene reveal-left">
+                <div className="why-badge-glow" />
+                <div className="why-badge-wrap">
+                  <img src="/badge.png" alt="Leafclutch Technology — 5 Years of Excellence" className="why-badge-img" />
+                  <span className="why-badge-shine" aria-hidden="true" />
                 </div>
               </div>
               <div ref={aboutPanelRef} className="about-slide-panel"><span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">About Leafclutch</span><h2 className="mt-5 text-3xl font-extrabold leading-tight text-white lg:text-5xl">Technology that moves your business forward.</h2><p className="mt-6 max-w-lg text-sm leading-relaxed text-white/80 lg:text-base">We combine deep engineering expertise with genuine care for your business outcomes. From management systems to digital transformation, we build secure, practical products that help teams work smarter.</p><div className="mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-white">Discover more <span className="h-px w-10 bg-white" /></div></div>
