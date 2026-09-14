@@ -45,8 +45,8 @@ export default function ManagedServicePage({ serviceId }: { serviceId: string })
   if (!serviceContent) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-32 text-center">
-        <h1 className="text-3xl font-bold text-[#0F1729]">Service not found</h1>
-        <p className="mt-4 text-[#676F7E]">This service may have been removed or is still loading.</p>
+        <h1 className="text-3xl font-bold text-[#0F1729]">Product not found</h1>
+        <p className="mt-4 text-[#676F7E]">This product may have been removed or is still loading.</p>
         <Link href="/" className="btn-navy mt-8 inline-flex rounded-xl px-6 py-3 text-sm font-semibold text-white">Back to home</Link>
       </main>
     );

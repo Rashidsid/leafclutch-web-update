@@ -10,8 +10,8 @@ export default function DashboardPanel({ onNavigate }: { onNavigate: (tab: 'serv
   const totalImages = services.reduce((sum, s) => sum + (s.heroImage ? 1 : 0) + s.images.length, 0) + websiteImages.length;
 
   const cards = [
-    { label: 'Total Services', value: services.length, icon: '🛠️', tone: 'from-cyan-400 to-[#072069]', onClick: () => onNavigate('services') },
-    { label: 'Published Services', value: publishedServices, icon: '✅', tone: 'from-[#3BE3A0] to-[#0EA5E9]', onClick: () => onNavigate('services') },
+    { label: 'Total Products', value: services.length, icon: '🛠️', tone: 'from-cyan-400 to-[#072069]', onClick: () => onNavigate('services') },
+    { label: 'Published Products', value: publishedServices, icon: '✅', tone: 'from-[#3BE3A0] to-[#0EA5E9]', onClick: () => onNavigate('services') },
     { label: 'Total Testimonials', value: testimonials.length, icon: '💬', tone: 'from-[#3B82F6] to-[#072069]', onClick: () => onNavigate('testimonials') },
     { label: 'Total Images', value: totalImages, icon: '🖼️', tone: 'from-[#0EA5E9] to-[#11A4D4]', onClick: () => onNavigate('images') },
   ];
@@ -46,10 +46,12 @@ export default function DashboardPanel({ onNavigate }: { onNavigate: (tab: 'serv
           <div className="space-y-1">
             {recentServices.map(service => (
               <div key={service.id} className="flex items-center gap-3 py-2.5 border-b border-[#F3F4F7] last:border-0">
-                <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm shrink-0">{service.icon}</span>
+                <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm shrink-0 overflow-hidden">
+                  {service.iconImage ? <img src={service.iconImage} alt="" className="h-full w-full object-cover" /> : service.icon}
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground truncate">{service.title}</p>
-                  <p className="text-xs text-muted-foreground">Service content updated</p>
+                  <p className="text-xs text-muted-foreground">Product content updated</p>
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">{relativeTime(service.updatedAt)}</span>
               </div>

@@ -13,7 +13,7 @@ function WebsiteImageFormModal({ initial, onClose, onSave }: { initial?: Website
           <input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="admin-input" placeholder="e.g. Homepage Hero Banner" />
         </Field>
         <Field label="Where it is used *">
-          <input required value={form.usedIn} onChange={e => setForm(p => ({ ...p, usedIn: e.target.value }))} className="admin-input" placeholder="e.g. Homepage — services row" />
+          <input required value={form.usedIn} onChange={e => setForm(p => ({ ...p, usedIn: e.target.value }))} className="admin-input" placeholder="e.g. Homepage — products row" />
         </Field>
         <Field label="Image">
           <ImageDropzone value={form.url} onChange={url => setForm(p => ({ ...p, url }))} />
@@ -39,7 +39,7 @@ export default function WebsiteImagesPanel() {
         <div>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-accent">Media</p>
           <h2 className="text-2xl font-bold text-foreground mt-1">Website Images</h2>
-          <p className="text-sm text-muted-foreground mt-1">Sitewide images not tied to a specific service page. Per-service photos are managed inside each service's editor.</p>
+          <p className="text-sm text-muted-foreground mt-1">Sitewide images not tied to a specific product page. Per-product photos are managed inside each product's editor.</p>
         </div>
         <button type="button" onClick={() => setModal({ mode: 'add' })} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">+ Add Image</button>
       </div>

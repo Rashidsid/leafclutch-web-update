@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-const logoImg = '/logo.png';
+const logoImg = '/Mlogo.png';
 import { useAdmin, type NewAdminService } from '@/app/context/AdminContext';
 import { supabase } from '@/lib/supabase';
 import { Field, ICON_CHOICES, ImageDropzone, Modal } from './shared';
@@ -18,7 +18,7 @@ type Tab = 'dashboard' | 'services' | 'service-editor' | 'testimonials' | 'image
 
 const NAV: { id: Tab; icon: string; label: string }[] = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-  { id: 'services', icon: '🛠️', label: 'Services' },
+  { id: 'services', icon: '🛠️', label: 'Products' },
   { id: 'testimonials', icon: '💬', label: 'Testimonials' },
   { id: 'images', icon: '🖼️', label: 'Website Images' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
@@ -34,8 +34,8 @@ function NewServiceForm({ onCancel, onCreate }: { onCancel: () => void; onCreate
   const [status, setStatus] = useState<NewAdminService['status']>('active');
 
   return (
-    <Modal title="Add a service" onClose={onCancel} wide>
-      <p className="text-sm text-muted-foreground -mt-3 mb-5">Every service page uses the same template — fill in the same fields the editor uses, then add images, features and testimonials afterward.</p>
+    <Modal title="Add a product" onClose={onCancel} wide>
+      <p className="text-sm text-muted-foreground -mt-3 mb-5">Every product page uses the same template — fill in the same fields the editor uses, then add images, features and testimonials afterward.</p>
       <form
         onSubmit={event => {
           event.preventDefault();
@@ -54,11 +54,11 @@ function NewServiceForm({ onCancel, onCreate }: { onCancel: () => void; onCreate
           </div>
         </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Service Name *"><input required value={title} onChange={event => setTitle(event.target.value)} className="admin-input" placeholder="e.g. Business Analytics" /></Field>
+          <Field label="Product Name *"><input required value={title} onChange={event => setTitle(event.target.value)} className="admin-input" placeholder="e.g. Business Analytics" /></Field>
           <Field label="Small Label (Top Text)" hint="Shown above the main heading"><input value={label} onChange={event => setLabel(event.target.value)} className="admin-input" placeholder="e.g. BUSINESS ANALYTICS" /></Field>
         </div>
         <Field label="Main Heading" hint="The big headline at the top of the page"><input value={heading} onChange={event => setHeading(event.target.value)} className="admin-input" placeholder="e.g. Make Smarter Decisions Faster" /></Field>
-        <Field label="Description *"><textarea required value={description} onChange={event => setDescription(event.target.value)} rows={3} className="admin-input resize-none" placeholder="What does this service provide?" /></Field>
+        <Field label="Description *"><textarea required value={description} onChange={event => setDescription(event.target.value)} rows={3} className="admin-input resize-none" placeholder="What does this product provide?" /></Field>
         <Field label="Hero / Profile Image">
           <ImageDropzone value={heroImage} onChange={setHeroImage} />
           <input value={heroImage} onChange={e => setHeroImage(e.target.value)} className="admin-input mt-2" placeholder="Or paste an image URL" />
@@ -71,7 +71,7 @@ function NewServiceForm({ onCancel, onCreate }: { onCancel: () => void; onCreate
         </Field>
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onCancel} className="rounded-lg border border-border px-4 py-2 text-sm font-medium">Cancel</button>
-          <button type="submit" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold text-white">Create service</button>
+          <button type="submit" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold text-white">Create product</button>
         </div>
       </form>
     </Modal>
@@ -133,7 +133,7 @@ export default function AdminPanel() {
     const q = search.trim().toLowerCase();
     if (!q) return [];
     const results: { key: string; label: string; sub: string; onSelect: () => void }[] = [];
-    services.forEach(s => { if (s.title.toLowerCase().includes(q)) results.push({ key: `s-${s.id}`, label: s.title, sub: 'Service', onSelect: () => { setEditingServiceId(s.id); setTab('service-editor'); setSearch(''); } }); });
+    services.forEach(s => { if (s.title.toLowerCase().includes(q)) results.push({ key: `s-${s.id}`, label: s.title, sub: 'Product', onSelect: () => { setEditingServiceId(s.id); setTab('service-editor'); setSearch(''); } }); });
     testimonials.forEach(t => { if (t.name.toLowerCase().includes(q) || t.company.toLowerCase().includes(q)) results.push({ key: `t-${t.id}`, label: t.name, sub: `Testimonial · ${t.company}`, onSelect: () => { setTab('testimonials'); setSearch(''); } }); });
     websiteImages.forEach(i => { if (i.name.toLowerCase().includes(q)) results.push({ key: `i-${i.id}`, label: i.name, sub: 'Website image', onSelect: () => { setTab('images'); setSearch(''); } }); });
     return results.slice(0, 8);
@@ -172,7 +172,7 @@ export default function AdminPanel() {
       {/* Sidebar */}
       <aside className="w-64 shrink-0 min-h-screen bg-[#0F1729] text-white flex flex-col">
         <div className="p-5 border-b border-white/10 flex items-center gap-3">
-          <Image src={logoImg} alt="Leafclutch Technology" className="h-9 w-9 rounded-lg object-contain bg-white/5 p-1" />
+          <Image src={logoImg} alt="Leafclutch Technology" width={36} height={36} className="h-9 w-9 rounded-lg object-contain bg-white/5 p-1" />
           <div className="min-w-0">
             <p className="font-bold text-sm truncate">Leafclutch Technology</p>
             <p className="text-gray-400 text-[11px]">Admin Panel</p>
@@ -198,8 +198,8 @@ export default function AdminPanel() {
               </button>
               {item.id === 'services' && servicesExpanded && (
                 <div className="ml-4 mt-1 space-y-0.5 border-l border-white/10 pl-3">
-                  <button type="button" onClick={() => goTab('services')} className={`block w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${tab === 'services' ? 'text-[#3BE3A0]' : 'text-gray-400 hover:text-white'}`}>All Services</button>
-                  <button type="button" onClick={() => setNewServiceOpen(true)} className="block w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-colors">+ Add New Service</button>
+                  <button type="button" onClick={() => goTab('services')} className={`block w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${tab === 'services' ? 'text-[#3BE3A0]' : 'text-gray-400 hover:text-white'}`}>All Products</button>
+                  <button type="button" onClick={() => setNewServiceOpen(true)} className="block w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-colors">+ Add New Product</button>
                 </div>
               )}
             </div>
@@ -220,7 +220,7 @@ export default function AdminPanel() {
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search services, testimonials, images…"
+              placeholder="Search products, testimonials, images…"
               className="w-full pl-9 pr-3 py-2 rounded-xl border border-border text-sm focus:outline-none focus:border-accent bg-[#F8FAFC]"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">🔍</span>

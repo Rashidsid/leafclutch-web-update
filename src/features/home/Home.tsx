@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRevealAll } from '@/app/hooks/useReveal';
 import TestimonialSection from '@/app/components/ui/TestimonialSection';
 import { useAdmin } from '@/app/context/AdminContext';
-const logoImg = '/logo.png';
+const logoImg = '/Mlogo.png';
 
 const services = [
   {
@@ -115,11 +115,12 @@ export default function Home() {
     return {
       name: service.title,
       slug: service.id,
-      label: service.label || fallback?.name || 'Our Services',
+      label: service.label || fallback?.name || 'Our Products',
       heading: service.heading || service.title,
       desc: service.description || fallback?.desc || 'Explore this solution from Leafclutch Technologies.',
       color: fallback?.color ?? ['#0EA5E9', '#25D366', '#3B82F6'][index % 3],
       image: service.heroImage || fallback?.image || '',
+      iconImage: service.iconImage || '',
       icon: fallback?.icon ?? <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9h10M7 13h7" /></>,
       comingSoon: service.status === 'coming_soon',
     };
@@ -201,7 +202,7 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* ── HERO ── orbiting services scene */}
-      <section className="hero2 relative overflow-hidden">
+      <section className="hero2 relative overflow-hidden min-h-dvh flex flex-col justify-center">
         <div className="hero2-backdrop absolute inset-0" aria-hidden="true">
           <div className="absolute inset-0 hero-grid opacity-[0.35]" />
         </div>
@@ -272,7 +273,7 @@ export default function Home() {
             </div>
           </div>
 
-          <button type="button" onClick={scrollToServices} className="hero2-scroll-cue" aria-label="Scroll down to explore services">
+          <button type="button" onClick={scrollToServices} className="hero2-scroll-cue" aria-label="Scroll down to explore products">
             <span>Scroll</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
               <path d="M12 5v14M6 13l6 6 6-6" />
@@ -370,7 +371,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
             <div className="reveal-left">
-              <span className="section-badge mb-2">Our Services</span>
+              <span className="section-badge mb-2">Our Products</span>
               <h2 className="text-4xl lg:text-5xl font-extrabold text-[#0F1729] mt-2 leading-tight">
                 Solutions built for<br />
                 <span className="text-[#072069]">real impact</span>
@@ -402,10 +403,14 @@ export default function Home() {
                   <div className="services-stage-grid">
                     <div className="services-story-copy">
                       <div className="services-story-badge-wrap">
-                        <span className="services-story-icon" style={{ background: s.color }}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                            {s.icon}
-                          </svg>
+                        <span className="services-story-icon" style={{ background: s.iconImage ? 'transparent' : s.color }}>
+                          {s.iconImage ? (
+                            <img src={s.iconImage} alt="" className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              {s.icon}
+                            </svg>
+                          )}
                         </span>
                         <span className="services-story-pill">{s.label}</span>
                       </div>
@@ -575,7 +580,7 @@ export default function Home() {
               Start Your Project →
             </a>
             <button type="button" onClick={scrollToServices} className="btn-outline px-8 py-4 rounded-xl text-sm">
-              View Services
+              View Products
             </button>
           </div>
         </div>
@@ -592,23 +597,29 @@ export default function Home() {
       {isContactPopupOpen && (
         <div className="contact-popup-backdrop" role="presentation" onMouseDown={() => setIsContactPopupOpen(false)}>
           <section className="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contact-popup-title" onMouseDown={event => event.stopPropagation()}>
-            <button type="button" className="contact-popup-close" aria-label="Close contact popup" onClick={() => setIsContactPopupOpen(false)}>×</button>
+            <button type="button" className="contact-popup-close" aria-label="Close contact popup" onClick={() => setIsContactPopupOpen(false)}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><path d="M5 5l14 14M19 5L5 19" /></svg>
+            </button>
             <div className="contact-popup-copy">
               <img src={logoImg} alt="Leafclutch Technology" className="contact-popup-logo" />
               <span className="contact-popup-kicker">Have a question?</span>
               <h2 id="contact-popup-title">Let’s Build<br /><em>Your Ideas</em> Together</h2>
-              <p>Have questions about our services? Talk to our team and get the right solution for your needs.</p>
+              <p>Have questions about our products? Talk to our team and get the right solution for your needs.</p>
               <div className="contact-popup-actions">
-                <a href="tel:+9779815111199" className="contact-popup-call"><span aria-hidden="true">☎</span><strong>Call Us<small>+977-9815-1111-99</small></strong></a>
-                <a href="https://wa.me/9779766715768" target="_blank" rel="noopener noreferrer" className="contact-popup-whatsapp"><span aria-hidden="true">◔</span><strong>WhatsApp Us<small>Chat with our team.</small></strong></a>
+                <a href="tel:+9779766715768" className="contact-popup-call">
+                  <span aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M6.6 10.8c1.4 2.7 3.6 4.9 6.3 6.3l2.1-2.1c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z"/></svg></span>
+                  <strong>Call Us<small>+977-9766-715768</small></strong>
+                </a>
+                <a href="https://wa.me/9779766715768" target="_blank" rel="noopener noreferrer" className="contact-popup-whatsapp">
+                  <span aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.06-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.2 14.2c-.22.62-1.28 1.18-1.77 1.22-.45.05-1.02.07-1.65-.1-.38-.11-.87-.28-1.5-.55-2.64-1.14-4.36-3.8-4.5-3.98-.13-.18-1.08-1.43-1.08-2.73 0-1.3.68-1.93.93-2.2.24-.26.53-.33.7-.33.18 0 .35 0 .5.01.16.01.38-.06.6.46.22.53.75 1.83.82 1.96.07.13.11.29.02.47-.09.18-.13.29-.26.45-.13.15-.27.34-.39.46-.13.13-.26.27-.11.53.15.26.66 1.09 1.42 1.77.98.87 1.8 1.14 2.06 1.27.26.13.41.11.56-.07.16-.18.65-.76.83-1.02.18-.26.35-.22.59-.13.24.09 1.53.72 1.79.85.26.13.44.2.5.31.06.11.06.62-.16 1.24z"/></svg></span>
+                  <strong>WhatsApp Us<small>Chat with our team.</small></strong>
+                </a>
               </div>
               <div className="contact-popup-benefits"><span>✓ <b>Quick Response</b></span><span>✓ <b>Expert Guidance</b></span><span>✓ <b>Trusted Support</b></span><span>✓ <b>Growing Together</b></span></div>
               <div className="contact-popup-cta"><span>100% Free&nbsp; • &nbsp;No Obligation&nbsp; • &nbsp;Expert Advice</span><a href="mailto:info@leafclutchtech.com.np">Book a Free Consultation <b>↗</b></a></div>
             </div>
             <div className="contact-popup-visual">
               <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=85" alt="Support team ready to help" />
-              <div className="contact-popup-message message-one"><i />Hi! How can we help you today?</div>
-              <div className="contact-popup-message message-two">Our team is online and ready to assist you! <b>•••</b></div>
               <div className="contact-popup-caption">♧ <span>Real People.<br />Real Support.</span></div>
             </div>
           </section>

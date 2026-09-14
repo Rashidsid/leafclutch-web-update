@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-const logoImg = '/logo.png';
+const logoImg = '/footer.png';
 
 const companyLinks = [
   { label: 'Home', to: '/' },
   { label: 'About Us', to: '/about' },
   { label: 'Training & Internship', to: '/training' },
-  { label: 'Services', to: '/services/digital-technology' },
+  { label: 'Products', to: '/services/digital-technology' },
   { label: 'Careers', to: '/careers' },
   { label: 'Contact', to: 'mailto:info@leafclutchtech.com.np' },
 ];
@@ -87,8 +87,8 @@ export default function Footer() {
 
           {/* Brand column */}
           <div>
-            <div className="inline-block bg-white rounded-xl px-4 py-2 mb-4 shadow-lg">
-              <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="h-11 w-auto" />
+            <div className="inline-block rounded-xl bg-[#0F1729] px-4 py-2 mb-4 shadow-lg">
+              <img src={logoImg} alt="Leafclutch Technologies Pvt. Ltd." className="h-16 w-auto" />
             </div>
             <p className="text-[#AEC0DE] text-sm leading-relaxed mb-3 max-w-xs">
               Empowering innovation through cutting-edge technology solutions, training, and digital transformation services.
@@ -138,7 +138,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="font-bold text-white text-sm mb-3">Services</h3>
+            <h3 className="font-bold text-white text-sm mb-3">Products</h3>
             <ul className="space-y-2">
               {serviceLinks.map((l) => (
                 <li key={l.label}>

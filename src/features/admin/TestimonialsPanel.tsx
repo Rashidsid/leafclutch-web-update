@@ -37,7 +37,7 @@ function TestimonialFormModal({ services, initial, defaultService = 'General', o
           <input required value={form.company} onChange={e => setForm(p => ({ ...p, company: e.target.value }))} className="admin-input" placeholder="Company name" />
         </Field>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Related service">
+          <Field label="Related product">
             <select value={form.service} onChange={e => setForm(p => ({ ...p, service: e.target.value }))} className="admin-input">
               <option>General</option>
               {services.map(service => <option key={service.id}>{service.title}</option>)}
@@ -101,7 +101,7 @@ export function TestimonialsBoard({ testimonials, services, scopeService }: { te
               {services.map(service => <option key={service.id}>{service.title}</option>)}
             </select>
           </div>
-        ) : <span className="text-xs text-muted-foreground">{filtered.length} testimonial{filtered.length === 1 ? '' : 's'} for this service</span>}
+        ) : <span className="text-xs text-muted-foreground">{filtered.length} testimonial{filtered.length === 1 ? '' : 's'} for this product</span>}
         <button type="button" onClick={() => setModal({ mode: 'add' })} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl shrink-0">+ Add Testimonial</button>
       </div>
 
@@ -116,7 +116,7 @@ export function TestimonialsBoard({ testimonials, services, scopeService }: { te
                   <th className="px-4 py-3 font-semibold">Client</th>
                   <th className="px-4 py-3 font-semibold">Designation</th>
                   <th className="px-4 py-3 font-semibold">Company</th>
-                  {!scopeService && <th className="px-4 py-3 font-semibold">Service</th>}
+                  {!scopeService && <th className="px-4 py-3 font-semibold">Product</th>}
                   <th className="px-4 py-3 font-semibold">Rating</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 font-semibold text-right">Actions</th>
@@ -192,7 +192,7 @@ export default function TestimonialsPanel() {
       <div className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-accent">Client Stories</p>
         <h2 className="text-2xl font-bold text-foreground mt-1">Testimonials</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage every review shown across your service pages.</p>
+        <p className="text-sm text-muted-foreground mt-1">Manage every review shown across your product pages.</p>
       </div>
       <TestimonialsBoard testimonials={testimonials} services={services} />
     </div>

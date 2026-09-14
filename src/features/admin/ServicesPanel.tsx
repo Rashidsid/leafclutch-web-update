@@ -11,10 +11,10 @@ export default function ServicesPanel({ onEdit, onAddNew }: { onEdit: (id: strin
       <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-accent">Content Studio</p>
-          <h2 className="text-2xl font-bold text-foreground mt-1">Service pages</h2>
-          <p className="text-sm text-muted-foreground mt-1">Edit the content, images and features that power each service page.</p>
+          <h2 className="text-2xl font-bold text-foreground mt-1">Product pages</h2>
+          <p className="text-sm text-muted-foreground mt-1">Edit the content, images and features that power each product page.</p>
         </div>
-        <button type="button" onClick={onAddNew} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">+ Add New Service</button>
+        <button type="button" onClick={onAddNew} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">+ Add New Product</button>
       </div>
 
       <div className="bg-white rounded-2xl border border-border overflow-hidden">
@@ -22,7 +22,7 @@ export default function ServicesPanel({ onEdit, onAddNew }: { onEdit: (id: strin
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-muted-foreground border-b border-border bg-[#F8FAFC]">
-                <th className="px-4 py-3 font-semibold">Service</th>
+                <th className="px-4 py-3 font-semibold">Product</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 font-semibold">Last Updated</th>
                 <th className="px-4 py-3 font-semibold text-right">Actions</th>
@@ -35,6 +35,8 @@ export default function ServicesPanel({ onEdit, onAddNew }: { onEdit: (id: strin
                     <div className="flex items-center gap-3">
                       {service.heroImage ? (
                         <img src={service.heroImage} alt="" className="w-11 h-11 rounded-lg object-cover shrink-0 bg-secondary" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+                      ) : service.iconImage ? (
+                        <img src={service.iconImage} alt="" className="w-11 h-11 rounded-lg object-cover shrink-0 bg-secondary" />
                       ) : (
                         <div className="w-11 h-11 rounded-lg shrink-0 bg-secondary flex items-center justify-center text-lg">{service.icon}</div>
                       )}

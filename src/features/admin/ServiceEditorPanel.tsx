@@ -9,7 +9,7 @@ type SubTab = 'basic' | 'images' | 'features' | 'testimonials' | 'settings';
 
 const TABS: { id: SubTab; label: string; icon: string }[] = [
   { id: 'basic', label: 'Basic Info', icon: '📄' },
-  { id: 'images', label: 'Service Images', icon: '🖼️' },
+  { id: 'images', label: 'Product Images', icon: '🖼️' },
   { id: 'features', label: 'Features', icon: '⚙️' },
   { id: 'testimonials', label: 'Testimonials', icon: '💬' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
@@ -21,6 +21,7 @@ export default function ServiceEditorPanel({ serviceId, onBack }: { serviceId: s
   const [subTab, setSubTab] = useState<SubTab>('basic');
   const [draft, setDraft] = useState<AdminService | null>(service ?? null);
   const [saved, setSaved] = useState(false);
+  const [iconEditorOpen, setIconEditorOpen] = useState(false);
 
   useEffect(() => {
     setDraft(service ?? null);
@@ -30,8 +31,8 @@ export default function ServiceEditorPanel({ serviceId, onBack }: { serviceId: s
   if (!service || !draft) {
     return (
       <div className="bg-white rounded-2xl border border-border p-10 text-center">
-        <p className="text-sm text-muted-foreground mb-4">This service no longer exists.</p>
-        <button type="button" onClick={onBack} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">Back to Services</button>
+        <p className="text-sm text-muted-foreground mb-4">This product no longer exists.</p>
+        <button type="button" onClick={onBack} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">Back to Products</button>
       </div>
     );
   }
@@ -45,7 +46,7 @@ export default function ServiceEditorPanel({ serviceId, onBack }: { serviceId: s
     if (!draft) return;
     updateService(service.id, {
       title: draft.title, label: draft.label, heading: draft.heading,
-      description: draft.description, status: draft.status,
+      description: draft.description, status: draft.status, iconImage: draft.iconImage,
     });
     setSaved(true);
   };
@@ -53,18 +54,46 @@ export default function ServiceEditorPanel({ serviceId, onBack }: { serviceId: s
   return (
     <div>
       <div className="text-xs text-muted-foreground mb-3">
-        <button type="button" onClick={onBack} className="hover:text-accent">Services</button> <span className="mx-1">›</span> Edit Service
+        <button type="button" onClick={onBack} className="hover:text-accent">Products</button> <span className="mx-1">›</span> Edit Product
       </div>
 
       <div className="bg-white rounded-2xl border border-border p-5 mb-5 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-2xl shrink-0">{service.icon}</span>
+          <div className="relative shrink-0">
+            <span className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-2xl overflow-hidden">
+              {draft.iconImage ? <img src={draft.iconImage} alt="" className="h-full w-full object-cover" /> : draft.icon}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIconEditorOpen(open => !open)}
+              aria-label="Change product icon"
+              className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white shadow-md hover:opacity-90 transition-opacity"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
+                <path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </button>
+            {iconEditorOpen && (
+              <div className="absolute left-0 top-full z-20 mt-2 w-64 rounded-xl border border-border bg-white p-3 shadow-xl">
+                <p className="text-xs font-semibold text-foreground mb-2">Product icon</p>
+                <ImageDropzone compact value={draft.iconImage ?? ''} onChange={url => setField('iconImage', url)} />
+                {draft.iconImage && (
+                  <button type="button" onClick={() => setField('iconImage', '')} className="mt-2 w-full text-xs font-semibold text-red-500 hover:text-red-600 transition-colors">
+                    Remove uploaded icon
+                  </button>
+                )}
+                <button type="button" onClick={() => setIconEditorOpen(false)} className="mt-2 w-full py-1.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-secondary transition-colors">
+                  Done
+                </button>
+              </div>
+            )}
+          </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-lg font-bold text-foreground truncate">{draft.title}</h2>
               <StatusPill active={draft.status === 'active'} />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">Update the content, images and details for this service page.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Update the content, images and details for this product page.</p>
           </div>
         </div>
         <div className="flex items-center gap-2.5 shrink-0">
@@ -102,7 +131,7 @@ function BasicInfoTab({ draft, setField }: { draft: AdminService; setField: <K e
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
       <div className="bg-white rounded-2xl border border-border p-6 space-y-4">
         <h3 className="font-bold text-foreground">Basic Information</h3>
-        <Field label="Service Name *"><input required value={draft.title} onChange={e => setField('title', e.target.value)} className="admin-input" /></Field>
+        <Field label="Product Name *"><input required value={draft.title} onChange={e => setField('title', e.target.value)} className="admin-input" /></Field>
         <Field label="Small Label (Top Text)" hint="Shown above the main heading, e.g. RESTAURANT MANAGEMENT SYSTEM"><input value={draft.label} onChange={e => setField('label', e.target.value)} className="admin-input" /></Field>
         <Field label="Main Heading" hint="The big headline at the top of the page"><input value={draft.heading} onChange={e => setField('heading', e.target.value)} className="admin-input" /></Field>
         <Field label="Description"><textarea value={draft.description} onChange={e => setField('description', e.target.value)} rows={3} className="admin-input resize-none" /></Field>
@@ -157,7 +186,7 @@ function ServiceImagesTab({ service }: { service: AdminService }) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div className="bg-white rounded-2xl border border-border p-6">
         <h3 className="font-bold text-foreground mb-1">Hero / Profile Image</h3>
-        <p className="text-xs text-muted-foreground mb-4">Add up to four images. They will auto-scroll across the service hero.</p>
+        <p className="text-xs text-muted-foreground mb-4">Add up to four images. They will auto-scroll across the product hero.</p>
         <div className="rounded-xl overflow-hidden bg-secondary aspect-video mb-4 flex items-center justify-center">
           {service.heroImage ? <img src={service.heroImage} alt="" className="h-full w-full object-cover" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} /> : <span className="text-3xl">{service.icon}</span>}
         </div>
@@ -226,7 +255,7 @@ function ServiceImagesTab({ service }: { service: AdminService }) {
       {deleteTarget && (
         <ConfirmDialog
           title="Delete image?"
-          description={`"${deleteTarget.label}" will be removed from this service.`}
+          description={`"${deleteTarget.label}" will be removed from this product.`}
           onCancel={() => setDeleteTarget(null)}
           onConfirm={() => { deleteServiceImage(service.id, deleteTarget.id); setDeleteTarget(null); }}
         />
@@ -264,8 +293,8 @@ function FeaturesTab({ service }: { service: AdminService }) {
     <div className="bg-white rounded-2xl border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-bold text-foreground">Service Features</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Shown as tabs on the service page, in this order.</p>
+          <h3 className="font-bold text-foreground">Product Features</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Shown as tabs on the product page, in this order.</p>
         </div>
         <button type="button" onClick={() => setModal({ mode: 'add' })} className="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl">+ Add Feature</button>
       </div>
@@ -322,7 +351,7 @@ function FeaturesTab({ service }: { service: AdminService }) {
       {deleteTarget && (
         <ConfirmDialog
           title="Delete feature?"
-          description={`"${deleteTarget.title}" will be removed from this service page.`}
+          description={`"${deleteTarget.title}" will be removed from this product page.`}
           onCancel={() => setDeleteTarget(null)}
           onConfirm={() => { deleteFeature(service.id, deleteTarget.id); setDeleteTarget(null); }}
         />
@@ -338,12 +367,12 @@ function ServiceSettingsTab({ service, onDeleted }: { service: AdminService; onD
   return (
     <div className="bg-white rounded-2xl border border-red-200 p-6 max-w-lg">
       <h3 className="font-bold text-red-500 mb-1">Danger Zone</h3>
-      <p className="text-sm text-muted-foreground mb-4">Deleting this service removes it, its images, and its features from the admin panel. It will no longer appear in the Services list. The live page component stays on the site until you remove it from the codebase.</p>
-      <button type="button" onClick={() => setConfirmDelete(true)} className="border border-red-300 text-red-500 hover:bg-red-50 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">Delete Service</button>
+      <p className="text-sm text-muted-foreground mb-4">Deleting this product removes it, its images, and its features from the admin panel. It will no longer appear in the Products list. The live page component stays on the site until you remove it from the codebase.</p>
+      <button type="button" onClick={() => setConfirmDelete(true)} className="border border-red-300 text-red-500 hover:bg-red-50 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">Delete Product</button>
 
       {confirmDelete && (
         <ConfirmDialog
-          title="Delete this service?"
+          title="Delete this product?"
           description={`"${service.title}" and all of its admin-managed content will be permanently removed.`}
           onCancel={() => setConfirmDelete(false)}
           onConfirm={() => { deleteService(service.id); setConfirmDelete(false); onDeleted(); }}

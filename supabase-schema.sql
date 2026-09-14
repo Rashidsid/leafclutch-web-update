@@ -14,6 +14,7 @@ drop table if exists public.site_settings cascade;
 create table public.services (
   id text primary key,
   icon text not null default 'service',
+  icon_image text,
   title text not null,
   label text,
   heading text,

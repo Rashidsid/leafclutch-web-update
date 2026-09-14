@@ -24,6 +24,7 @@ export type Testimonial = {
 export type AdminService = {
   id: string;
   icon: string;
+  iconImage?: string;
   title: string;
   label: string;
   heading: string;
@@ -278,6 +279,7 @@ const AdminContext = createContext<AdminContextValue | undefined>(undefined);
 const mapSupabaseService = (row: any): AdminService => ({
   id: row.id ?? row.slug ?? genId('service'),
   icon: row.icon ?? '✨',
+  iconImage: row.icon_image ?? row.iconImage ?? '',
   title: row.title ?? 'Untitled Service',
   label: row.label ?? (row.title ?? 'SERVICE').toUpperCase(),
   heading: row.heading ?? row.title ?? 'Untitled Service',
@@ -382,6 +384,7 @@ const syncSupabaseContent = async ({ testimonials, services, websiteImages }: { 
     const serviceRows = services.map(service => ({
       id: service.id,
       icon: service.icon,
+      icon_image: service.iconImage || null,
       title: service.title,
       label: service.label,
       heading: service.heading,
@@ -413,6 +416,26 @@ const syncSupabaseContent = async ({ testimonials, services, websiteImages }: { 
       url: image.url,
       updated_at: new Date(image.updatedAt || Date.now()).toISOString(),
     }));
+
+    // Upsert only ever inserts/updates the rows we send — rows removed locally (e.g. a
+    // deleted service) are never included in the payload, so they'd otherwise stay in
+    // the table forever. Diff against what's currently in Supabase and delete the rest.
+    const pruneRemoved = async (table: string, currentIds: Array<string | number>) => {
+      const existing = await supabase.from(table).select('id');
+      if (existing.error) throw new Error(`${table} read: ${existing.error.message}`);
+      const currentIdSet = new Set(currentIds.map(String));
+      const removedIds = (existing.data ?? [])
+        .map((row: any) => row.id)
+        .filter((id: string | number) => !currentIdSet.has(String(id)));
+      if (removedIds.length) {
+        const pruneResult = await supabase.from(table).delete().in('id', removedIds);
+        if (pruneResult.error) throw new Error(`${table} prune: ${pruneResult.error.message}`);
+      }
+    };
+
+    await pruneRemoved('services', services.map(s => s.id));
+    await pruneRemoved('testimonials', testimonials.map(t => t.id));
+    await pruneRemoved('website_images', websiteImages.map(w => w.id));
 
     const serviceResult = await supabase.from('services').upsert(serviceRows, { onConflict: 'id' });
     if (serviceResult.error) throw new Error(`services: ${serviceResult.error.message}`);
