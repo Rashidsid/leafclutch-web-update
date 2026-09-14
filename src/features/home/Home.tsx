@@ -105,6 +105,7 @@ export default function Home() {
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(true);
   const whyIntroRef = useRef<HTMLDivElement>(null);
   const aboutPanelRef = useRef<HTMLDivElement>(null);
+  const achievementImageRef = useRef<HTMLDivElement>(null);
   const servicesScrollBoxRef = useRef<HTMLDivElement>(null);
   const servicePageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeService, setActiveService] = useState(0);
@@ -161,6 +162,21 @@ export default function Home() {
       }
     }, { threshold: 0.35 });
     observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const image = achievementImageRef.current;
+    if (!image) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        image.classList.remove('is-visible');
+        void image.offsetWidth; // force reflow so the animation restarts every time
+        image.classList.add('is-visible');
+      } else {
+        image.classList.remove('is-visible');
+      }
+    }, { threshold: 0.15 });
+    observer.observe(image);
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
@@ -284,13 +300,65 @@ export default function Home() {
                 <span className="hero2-stat-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>
                 </span>
-                <div><strong>5+</strong><span>Years Experience</span></div>
+                <div><strong>5+</strong><span>Years Experience Team</span></div>
               </div>
               <div className="hero2-stat">
                 <span className="hero2-stat-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" /><path d="M9 12l2 2 4-4" /></svg>
                 </span>
                 <div><strong>99.9%</strong><span>Service Uptime</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── ACHIEVEMENT STORY ── */}
+      <section className="py-12 lg:py-16 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div ref={achievementImageRef} className="achievement-image-wrap">
+              <img src="/client.png" alt="200+ happy Leafclutch clients" className="w-full h-auto rounded-3xl shadow-lg" />
+            </div>
+
+            <div className="reveal-right">
+              <span className="section-badge mb-3">Since 2025</span>
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F1729] mt-2 leading-tight">
+                Our Journey Toward <span className="text-[#072069]">Digital Excellence</span>
+              </h2>
+              <p className="text-[#676F7E] text-base mt-5 max-w-lg leading-relaxed">
+                From restaurant and pharmacy management systems to school ERPs and AI-driven automation, every solution we build reflects our commitment to helping businesses across Nepal operate smarter, grow faster and embrace technology with confidence.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <span className="flex items-center justify-center w-9 h-9 rounded-full bg-[#EEF4FF] text-[#072069] mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>
+                  </span>
+                  <p className="text-xl font-extrabold text-[#0F1729]">8+ Years</p>
+                  <p className="text-xs text-[#676F7E] uppercase tracking-wide mt-1">Industry Experience TEAM</p>
+                </div>
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <span className="flex items-center justify-center w-9 h-9 rounded-full bg-[#EEF4FF] text-[#072069] mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /><circle cx="12" cy="12" r="0.5" /></svg>
+                  </span>
+                  <p className="text-xl font-extrabold text-[#0F1729]">50+ Projects</p>
+                  <p className="text-xs text-[#676F7E] uppercase tracking-wide mt-1">Successfully Delivered</p>
+                </div>
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <span className="flex items-center justify-center w-9 h-9 rounded-full bg-[#EEF4FF] text-[#072069] mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
+                  </span>
+                  <p className="text-xl font-extrabold text-[#0F1729]">80+ Clients</p>
+                  <p className="text-xs text-[#676F7E] uppercase tracking-wide mt-1">Trust Our Solutions</p>
+                </div>
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <span className="flex items-center justify-center w-9 h-9 rounded-full bg-[#EEF4FF] text-[#072069] mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" /><path d="M9 12l2 2 4-4" /></svg>
+                  </span>
+                  <p className="text-xl font-extrabold text-[#0F1729]">98.9%</p>
+                  <p className="text-xs text-[#676F7E] uppercase tracking-wide mt-1">Service Uptime</p>
+                </div>
               </div>
             </div>
           </div>
@@ -415,7 +483,7 @@ export default function Home() {
               <span className="nepal-kicker">Trusted Across Nepal</span>
               <h2 className="nepal-heading">
                 Powering Businesses<br />
-                Across Nepal <em>Since 2020</em>
+                Across Nepal <em>Since 2025</em>
               </h2>
               <p className="nepal-desc">
                 We build restaurant, pharmacy and school management systems, custom software and AI-driven automation for businesses across the country. From our home base in Siddharthanagar to every corner of Nepal, we&apos;re here to help you run smarter and grow faster.

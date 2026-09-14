@@ -944,6 +944,20 @@ body {
 }
 .reveal-left.visible { opacity: 1; transform: none; }
 
+.achievement-image-wrap { opacity: 0; transform: translateX(-110px) scale(1.3); }
+.achievement-image-wrap.is-visible {
+  opacity: 1;
+  transform: none;
+  animation: achievementImageIn .9s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes achievementImageIn {
+  from { opacity: 0; transform: translateX(-110px) scale(1.3); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .achievement-image-wrap, .achievement-image-wrap.is-visible { animation: none; opacity: 1; transform: none; }
+}
+
 .reveal-right {
   opacity: 0;
   transform: translateX(26px);
@@ -961,9 +975,9 @@ body {
 /* ── Section badge ── */
 .section-badge {
   display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(14,165,233,0.08);
-  border: 1px solid rgba(14,165,233,0.25);
-  color: #0EA5E9;
+  background: #072069;
+  border: 1px solid #072069;
+  color: #FFFFFF;
   font-size: 0.7rem; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase;
   padding: 5px 14px; border-radius: 100px;
